@@ -30,3 +30,20 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.get_contact_type_display()}: {self.value}"
+
+    def get_contact_url(self):
+        """Returns the appropriate URL for the contact type"""
+        if self.contact_type == 'EMAIL':
+            return f'mailto:{self.value}'
+        return self.value
+
+    def get_icon_class(self):
+        """Returns Font Awesome icon class for the contact type"""
+        icon_map = {
+            'EMAIL': 'envelope',
+            'PHONE': 'phone',
+            'LINKEDIN': 'linkedin',
+            'GITHUB': 'github',
+            'WEBSITE': 'globe',
+        }
+        return icon_map.get(self.contact_type, 'circle')

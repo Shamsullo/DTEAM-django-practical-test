@@ -43,7 +43,7 @@ poetry run python manage.py runserver
 *Access the app at `http://localhost:8000`.*  
 
 
-### Sample Data
+### **Sample Data**
 The project includes initial/testing sample data that can be loaded using Django fixtures. 
 This will create:
 - A CV for Shamsullo Ismatov, a backend software engineer with 4+ years of experience
@@ -54,4 +54,13 @@ This will create:
 To load the sample data:
 ```bash
 poetry run python manage.py loaddata cv_sample_data
+```
+
+### ***Testing**
+The project uses Django's built-in testing framework. Tests are organized within each app's directory.
+
+### Running Tests
+Execute tests using Poetry:
+```bash
+poetry run python manage.py test
 ```
