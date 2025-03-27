@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="bg-white shadow rounded-lg p-6">
+    <h1 class="text-2xl font-bold mb-6">Recent Requests</h1>
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Method</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Path</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Time</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for log in logs %}
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ log.timestamp|date:"Y-m-d H:i:s" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                            {% if log.method == 'GET' %}bg-green-100 text-green-800
+                            {% elif log.method == 'POST' %}bg-blue-100 text-blue-800
+                            {% elif log.method == 'DELETE' %}bg-red-100 text-red-800
+                            {% elif log.method == 'PUT' %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-gray-100 text-gray-800{% endif %}">
+                            {{ log.method }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
+                            {% if log.status_code < 300 %}bg-green-100 text-green-800
+                            {% elif log.status_code < 400 %}bg-blue-100 text-blue-800
+                            {% elif log.status_code < 500 %}bg-yellow-100 text-yellow-800
+                            {% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ log.status_code|default:"-" }}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <div class="tooltip" title="{{ log.path }}">
+                            {{ log.path|truncatechars:30 }}
+                            {% if log.query_string %}
+                            <span class="text-xs text-gray-400">?{{ log.query_string|truncatechars:20 }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ log.response_time|floatformat:3 }}s
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ log.user|default:"-" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {{ log.remote_addr|default:"-" }}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button onclick="showDetails('{{ log.id }}')"
+                                class="text-blue-600 hover:text-blue-900">
+                            Details
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for request details -->
+    <div id="detailsModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
+        <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold">Request Details</h3>
+                <button onclick="closeModal()" class="text-gray-600 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="modalContent" class="space-y-4">
+                <!-- Content will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    {% if page_obj.has_other_pages %}
+    <div class="mt-4 flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
+        <div class="flex justify-center items-center space-x-2">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}"
+               class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                Previous
+            </a>
+            {% endif %}
+
+            {% for num in paginator.page_range %}
+                {% if num == page_obj.number %}
+                <span class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md">
+                    {{ num }}
+                </span>
+                {% else %}
+                <a href="?page={{ num }}"
+                   class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                    {{ num }}
+                </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}"
+               class="px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50">
+                Next
+            </a>
+            {% endif %}
+        </div>
+
+        <span class="text-sm text-gray-700">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </span>
+    </div>
+    {% endif %}
+</div>
+
+{% block extra_js %}
+<script>
+function showDetails(logId) {
+    fetch(`/audit/api/request-log/${logId}/`)
+        .then(response => response.json())
+        .then(data => {
+            const content = `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <p><strong>User Agent:</strong> ${data.user_agent || '-'}</p>
+                        <p><strong>Referer:</strong> ${data.referer || '-'}</p>
+                        <p><strong>Host:</strong> ${data.host || '-'}</p>
+                        <p><strong>Secure:</strong> ${data.is_secure ? 'Yes' : 'No'}</p>
+                        <p><strong>Ajax:</strong> ${data.is_ajax ? 'Yes' : 'No'}</p>
+                    </div>
+                    <div class="space-y-2">
+                        <p><strong>Session:</strong> ${data.session_key || '-'}</p>
+                        <p><strong>Content Type:</strong> ${data.content_type || '-'}</p>
+                        <p><strong>Encoding:</strong> ${data.encoding || '-'}</p>
+                    </div>
+                </div>
+                ${data.request_body ? `
+                <div class="mt-4">
+                    <strong>Request Body:</strong>
+                    <pre class="mt-2 bg-gray-100 p-2 rounded">${data.request_body}</pre>
+                </div>` : ''}
+                ${data.headers ? `
+                <div class="mt-4">
+                    <strong>Headers:</strong>
+                    <pre class="mt-2 bg-gray-100 p-2 rounded">${JSON.stringify(data.headers, null, 2)}</pre>
+                </div>` : ''}
+            `;
+            document.getElementById('modalContent').innerHTML = content;
+            document.getElementById('detailsModal').classList.remove('hidden');
+        });
+}
+
+function closeModal() {
+    document.getElementById('detailsModal').classList.add('hidden');
+}
+</script>
+{% endblock %}
+{% endblock %}
