@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ cv.first_name }} {{ cv.last_name }} - CV</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 2.5cm 2cm;
+            @top-right {
+                content: "Page " counter(page) " of " counter(pages);
+            }
+        }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .header {
+            margin-bottom: 2em;
+        }
+        .name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 0.5em;
+        }
+        .contacts {
+            margin-bottom: 1em;
+        }
+        .section {
+            margin-bottom: 2em;
+        }
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 1em;
+        }
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1em;
+        }
+        .project {
+            margin-bottom: 1.5em;
+        }
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5em;
+        }
+        .project-title {
+            font-weight: bold;
+        }
+        .project-date {
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="name">{{ cv.first_name }} {{ cv.last_name }}</div>
+        <div class="contacts">
+            {% for contact in cv.contacts.all %}
+                <div>{{ contact.get_type_display }}: {{ contact.value }}</div>
+            {% endfor %}
+        </div>
+        <div class="bio">{{ cv.bio }}</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Skills</div>
+        <div class="skills-grid">
+            {% for skill in cv.skills.all %}
+                <div class="skill">
+                    <div>{{ skill.name }}</div>
+                    <div>{{ skill.get_proficiency_display }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Projects</div>
+        {% for project in cv.projects.all %}
+            <div class="project">
+                <div class="project-header">
+                    <span class="project-title">{{ project.title }}</span>
+                    <span class="project-date">
+                        {{ project.start_date|date:"M Y" }} -
+                        {% if project.end_date %}
+                            {{ project.end_date|date:"M Y" }}
+                        {% else %}
+                            Present
+                        {% endif %}
+                    </span>
+                </div>
+                <div>{{ project.description }}</div>
+                {% if project.url %}
+                    <div>Project URL: {{ project.url }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if cv.education.all %}
+        <div class="section">
+            <div class="section-title">Education</div>
+            {% for edu in cv.education.all %}
+                <div class="education">
+                    <div>{{ edu.institution }}</div>
+                    <div>{{ edu.degree }}</div>
+                    <div>{{ edu.start_date|date:"Y" }} - {{ edu.end_date|date:"Y" }}</div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>
