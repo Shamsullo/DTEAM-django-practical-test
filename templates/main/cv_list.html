@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {% for cv in cvs %}
+            <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                <div class="p-6">
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-2xl font-bold text-gray-800">
+                            {{ cv.first_name }} {{ cv.last_name }}
+                        </h2>
+                    </div>
+
+                    <!-- Bio -->
+                    <p class="text-gray-600 mb-4">{{ cv.bio|truncatewords:30 }}</p>
+
+                    <!-- Skills -->
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold mb-2 text-gray-700">Skills</h3>
+                        <div class="flex flex-wrap gap-2">
+                            {% for skill in cv.skills.all|slice:":5" %}
+                                <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                        {{ skill.name }}
+                    </span>
+                            {% endfor %}
+                            {% if cv.skills.all|length > 5 %}
+                                <span class="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm">
+                        +{{ cv.skills.all|length|add:"-5" }} more
+                    </span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Latest Project -->
+                    {% with latest_project=cv.projects.all|first %}
+                        {% if latest_project %}
+                            <div class="mb-4">
+                                <h3 class="text-lg font-semibold mb-2 text-gray-700">Latest Project</h3>
+                                <div class="bg-gray-50 rounded p-3">
+                                    <h4 class="font-medium text-gray-800">{{ latest_project.title }}</h4>
+                                    <p class="text-gray-600 text-sm">{{ latest_project.description|truncatewords:20 }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- Contact -->
+                    {% with primary_contact=cv.contacts.all|first %}
+                        {% if primary_contact %}
+                            <div class="mt-4 pt-4 border-t border-gray-200">
+                                <div class="flex items-center text-gray-600">
+                                    <i class="fas fa-envelope mr-2"></i>
+                                    <a href="mailto:{{ primary_contact.value }}" class="text-blue-600 hover:text-blue-800">
+                                        {{ primary_contact.value }}
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endwith %}
+
+                    <!-- View Details Button -->
+                    <div class="mt-4 text-right">
+                        <a href="{% url 'cv_detail' cv.pk %}"
+                           class="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors duration-300">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-span-full text-center py-12">
+                <div class="bg-white rounded-lg shadow-md p-8">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-2">No CVs Found</h3>
+                    <p class="text-gray-600">There are currently no CVs in the system.</p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

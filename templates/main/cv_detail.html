@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto">
+        <!-- Header Section -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
+            <div class="p-6">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <h1 class="text-3xl font-bold text-gray-800">
+                            {{ cv.first_name }} {{ cv.last_name }}
+                        </h1>
+                        <div class="mt-2 space-x-4">
+                            {% for contact in cv.contacts.all %}
+                                <a href="{{ contact.get_contact_url }}"
+                                   class="inline-flex items-center text-gray-600 hover:text-blue-600">
+                                    <i class="fas fa-{{ contact.get_icon_class }} mr-2"></i>
+                                    {{ contact.value }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <a href="{% url 'cv_list' %}"
+                       class="bg-gray-100 text-gray-700 px-4 py-2 rounded hover:bg-gray-200">
+                        Back to List
+                    </a>
+                </div>
+
+                <!-- Bio -->
+                <div class="mt-6">
+                    <p class="text-gray-600 leading-relaxed">
+                        {{ cv.bio }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
+            <div class="p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Skills</h2>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {% for skill in cv.skills.all %}
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h3 class="font-medium text-gray-800">{{ skill.name }}</h3>
+                            <p class="text-sm text-gray-600">
+                                {{ skill.get_proficiency_display }}
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Projects Section -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
+            <div class="p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Projects</h2>
+                <div class="space-y-6">
+                    {% for project in cv.projects.all %}
+                        <div class="border-b border-gray-200 last:border-0 pb-6 last:pb-0">
+                            <div class="flex justify-between items-start">
+                                <h3 class="text-xl font-medium text-gray-800">
+                                    {{ project.title }}
+                                </h3>
+                                <div class="text-sm text-gray-600">
+                                    {{ project.start_date|date:"M Y" }} -
+                                    {% if project.end_date %}
+                                        {{ project.end_date|date:"M Y" }}
+                                    {% else %}
+                                        Present
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <p class="mt-2 text-gray-600">{{ project.description }}</p>
+                            {% if project.url %}
+                                <a href="{{ project.url }}"
+                                   target="_blank"
+                                   class="mt-2 inline-flex items-center text-blue-600 hover:text-blue-800">
+                                    <i class="fas fa-external-link-alt mr-2"></i>
+                                    View Project
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Education Section (if you have education model) -->
+        {% if cv.education.all %}
+            <div class="bg-white shadow-lg rounded-lg overflow-hidden mb-6">
+                <div class="p-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Education</h2>
+                    <div class="space-y-4">
+                        {% for edu in cv.education.all %}
+                            <div class="border-b border-gray-200 last:border-0 pb-4 last:pb-0">
+                                <h3 class="font-medium text-gray-800">{{ edu.institution }}</h3>
+                                <p class="text-gray-600">{{ edu.degree }}</p>
+                                <p class="text-sm text-gray-500">
+                                    {{ edu.start_date|date:"Y" }} - {{ edu.end_date|date:"Y" }}
+                                </p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
