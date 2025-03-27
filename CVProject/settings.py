@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     'rest_framework',
 
     'main',
+    'audit',
 ]
 
 MIDDLEWARE = [
@@ -29,6 +30,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'audit.middleware.RequestLogMiddleware',
+
 ]
 
 ROOT_URLCONF = 'CVProject.urls'
@@ -85,3 +88,12 @@ USE_TZ = True
 STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# settings.py
+
+# RequestLog settings
+REQUEST_LOG_ENABLED = True
+REQUEST_LOG_EXCLUDE_PATHS = ['/health/', '/metrics/']
+REQUEST_LOG_EXCLUDE_EXTENSIONS = ['.jpg', '.png', '.gif', '.css', '.js']
+REQUEST_LOG_MAX_BODY_LENGTH = 1000
+REQUEST_LOG_SENSITIVE_FIELDS = ['password', 'token', 'key', 'secret']
