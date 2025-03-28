@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="bg-white shadow rounded-lg p-6">
+        <h1 class="text-2xl font-bold mb-6">Django Settings</h1>
+
+        <div class="space-y-4">
+            <div class="border-b pb-4">
+                <h2 class="text-xl font-semibold mb-2">Debug Settings</h2>
+                <p class="flex items-center">
+                    <span class="font-medium mr-2">DEBUG:</span>
+                    {% if settings.DEBUG %}
+                        <span class="text-green-600">Enabled</span>
+                    {% else %}
+                        <span class="text-red-600">Disabled</span>
+                    {% endif %}
+                </p>
+            </div>
+
+            <div class="border-b pb-4">
+                <h2 class="text-xl font-semibold mb-2">Database Settings</h2>
+                <p><span class="font-medium">Engine:</span> {{ settings.DATABASES.default.ENGINE }}</p>
+                <p><span class="font-medium">Name:</span> {{ settings.DATABASES.default.NAME }}</p>
+            </div>
+
+            <div class="border-b pb-4">
+                <h2 class="text-xl font-semibold mb-2">Other Settings</h2>
+                <p><span class="font-medium">Time Zone:</span> {{ settings.TIME_ZONE }}</p>
+                <p><span class="font-medium">Language Code:</span> {{ settings.LANGUAGE_CODE }}</p>
+                <p><span class="font-medium">Static URL:</span> {{ settings.STATIC_URL }}</p>
+            </div>
+        </div>
+    </div>
+{% endblock %}
