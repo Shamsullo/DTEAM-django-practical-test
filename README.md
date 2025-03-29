@@ -64,3 +64,35 @@ Execute tests using Poetry:
 ```bash
 poetry run python manage.py test
 ```
+
+### **Running the Project with Docker Compose**
+
+If you prefer to run the project using Docker Compose, we have introduced this
+method as well. For it follow these steps:
+
+1. **Build and Start the Docker Containers**  
+   Run the following command to build the images and start the containers:
+   ```bash
+   docker-compose up --build
+   ```
+
+2. **Access the Application**  
+   Once the containers are up and running, access the application at:
+   ```plaintext
+   http://localhost:8000
+   ```
+
+3. **Load Sample Data (Optional)**  
+   To load the initial sample data into the database, run:
+   ```bash
+   docker-compose exec web poetry run python manage.py loaddata cv_sample_data
+   ```
+
+4. **Run Tests**  
+   To execute tests inside the container, use the following command:
+   ```bash
+   docker-compose exec web poetry run python manage.py test
+   ```
+
+*The `docker-compose.yml` file defines the necessary services for the
+application, including the web server and database.*
