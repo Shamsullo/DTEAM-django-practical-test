@@ -56,7 +56,7 @@ To load the sample data:
 poetry run python manage.py loaddata cv_sample_data
 ```
 
-### ***Testing**
+### **Testing**
 The project uses Django's built-in testing framework. Tests are organized within each app's directory.
 
 ### Running Tests
