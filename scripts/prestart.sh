@@ -13,7 +13,7 @@ echo "Applying database migrations..."
 poetry run python manage.py migrate --noinput
 
 # Load fixtures
-poetry run python manage.py loaddata fixtures/*.json
+#poetry run python manage.py loaddata fixtures/*.json
 
 echo "Running collectstatic..."
 poetry run python manage.py collectstatic --noinput
