@@ -28,29 +28,37 @@ class RequestLogMiddleware:
         try:
             # Prepare headers (excluding sensitive information)
             headers = {}
-            sensitive_headers = {'cookie', 'authorization',
-                                 'proxy-authorization'}
+            sensitive_headers = {
+                "cookie",
+                "authorization",
+                "proxy-authorization",
+            }
             for header_name, header_value in request.META.items():
-                if header_name.startswith('HTTP_') and header_name[
-                                                       5:].lower() not in sensitive_headers:
+                if (
+                    header_name.startswith("HTTP_")
+                    and header_name[5:].lower() not in sensitive_headers
+                ):
                     headers[header_name[5:].lower()] = header_value
 
             # Get request body while respecting privacy
             try:
-                request_body = request.body.decode('utf-8')
+                request_body = request.body.decode("utf-8")
                 # Try to parse as JSON to clean sensitive data
                 try:
                     body_data = json.loads(request_body)
                     if isinstance(body_data, dict):
                         # Remove sensitive fields
-                        for key in ['password', 'token', 'key', 'secret']:
+                        for key in ["password", "token", "key", "secret"]:
                             if key in body_data:
-                                body_data[key] = '[FILTERED]'
+                                body_data[key] = "[FILTERED]"
                     request_body = json.dumps(body_data)
                 except json.JSONDecodeError:
                     # If not JSON, store as is but limit size
-                    request_body = request_body[:1000] if len(
-                        request_body) > 1000 else request_body
+                    request_body = (
+                        request_body[:1000]
+                        if len(request_body) > 1000
+                        else request_body
+                    )
             except:
                 request_body = None
 
@@ -59,25 +67,23 @@ class RequestLogMiddleware:
                 # Request details
                 method=request.method,
                 path=request.path,
-                query_string=request.META.get('QUERY_STRING', ''),
+                query_string=request.META.get("QUERY_STRING", ""),
                 remote_addr=self.get_client_ip(request),
                 user=request.user if request.user.is_authenticated else None,
-
                 # Response details
                 status_code=response.status_code,
                 response_time=response_time,
-
                 # Request metadata
-                user_agent=request.META.get('HTTP_USER_AGENT', ''),
-                referer=request.META.get('HTTP_REFERER', ''),
+                user_agent=request.META.get("HTTP_USER_AGENT", ""),
+                referer=request.META.get("HTTP_REFERER", ""),
                 request_body=request_body,
                 content_type=request.content_type,
                 session_key=request.session.session_key,
                 headers=headers,
                 host=request.get_host(),
                 is_secure=request.is_secure(),
-                is_ajax=request.headers.get(
-                    'X-Requested-With') == 'XMLHttpRequest',
+                is_ajax=request.headers.get("X-Requested-With")
+                == "XMLHttpRequest",
                 encoding=request.encoding,
             )
 
@@ -90,29 +96,29 @@ class RequestLogMiddleware:
 
     def get_client_ip(self, request):
         """Get the real IP address of the client, considering proxy headers"""
-        x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+        x_forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR")
         if x_forwarded_for:
-            ip = x_forwarded_for.split(',')[0].strip()
+            ip = x_forwarded_for.split(",")[0].strip()
         else:
-            ip = request.META.get('REMOTE_ADDR')
+            ip = request.META.get("REMOTE_ADDR")
         return ip
 
     def should_log_request(self, request):
         """Determine if the request should be logged based on settings"""
-        if not getattr(settings, 'REQUEST_LOG_ENABLED', True):
+        if not getattr(settings, "REQUEST_LOG_ENABLED", True):
             return False
 
         # Don't log static/media files
-        if request.path.startswith(('/static/', '/media/')):
+        if request.path.startswith(("/static/", "/media/")):
             return False
 
         # Check excluded paths from settings
-        for path in getattr(settings, 'REQUEST_LOG_EXCLUDE_PATHS', []):
+        for path in getattr(settings, "REQUEST_LOG_EXCLUDE_PATHS", []):
             if request.path.startswith(path):
                 return False
 
         # Check excluded extensions from settings
-        for ext in getattr(settings, 'REQUEST_LOG_EXCLUDE_EXTENSIONS', []):
+        for ext in getattr(settings, "REQUEST_LOG_EXCLUDE_EXTENSIONS", []):
             if request.path.endswith(ext):
                 return False
 
