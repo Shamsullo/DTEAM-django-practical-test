@@ -1,5 +1,11 @@
 FROM python:3.12-slim as base
 
+RUN apt-get update && \
+    apt-get install -y gcc libpq-dev \
+    libpango-1.0-0 libpangoft2-1.0-0 gir1.2-harfbuzz-0.0 && \
+    apt clean && \
+    rm -rf /var/cache/apt/* \
+
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV POETRY_VERSION=2
@@ -8,7 +14,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     bash \
     netcat-openbsd \
     build-essential \
-    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install "poetry==$POETRY_VERSION"
