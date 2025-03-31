@@ -18,16 +18,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 RUN pip install "poetry==$POETRY_VERSION"
 
-WORKDIR /app
+WORKDIR /code
 
-COPY pyproject.toml poetry.lock* /app/
+COPY pyproject.toml poetry.lock* ./
 
 RUN poetry config virtualenvs.create false \
     && poetry install --no-interaction --no-ansi --no-root
 
 COPY . .
 
-RUN chmod +x /app/scripts/entrypoint.sh
+RUN chmod +x /code/scripts/entrypoint.sh
 
 EXPOSE 8000
 
