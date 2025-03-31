@@ -2,9 +2,12 @@ from django.db.models import Prefetch
 from django.http import HttpResponseServerError
 from django.views.generic import ListView, DetailView
 from django_weasyprint import WeasyTemplateResponseMixin
+from django.http import JsonResponse
+from django.core.validators import EmailValidator
+from django.core.exceptions import ValidationError
+from django.views.generic.detail import BaseDetailView
+from .tasks import send_cv_pdf_email
 
-# from django_weasyprint import WeasyTemplateResponseMixin
-# from django.http import HttpResponseServerError
 
 from .models import CV, Contact, Project, Skill
 
@@ -65,3 +68,39 @@ class CVDetailPDFView(WeasyTemplateResponseMixin, DetailView):
             return super().get(request, *args, **kwargs)
         except Exception as e:
             return HttpResponseServerError(f"Error generating PDF: {str(e)}")
+
+
+class SendCVEmailAjaxView(BaseDetailView):
+    model = CV
+
+    def validate_email(self, email):
+        validator = EmailValidator()
+        try:
+            validator(email)
+            return True
+        except ValidationError:
+            return False
+
+    def post(self, request, *args, **kwargs):
+        email = request.POST.get("email")
+
+        if not email:
+            return JsonResponse(
+                {"error": "Email address is required"}, status=400
+            )
+
+        if not self.validate_email(email):
+            return JsonResponse({"error": "Invalid email address"}, status=400)
+
+        try:
+            cv = self.get_object()
+            task = send_cv_pdf_email.delay(cv.pk, email)
+
+            return JsonResponse(
+                {"message": "Email will be sent shortly", "task_id": task.id}
+            )
+
+        except Exception as e:
+            return JsonResponse(
+                {"error": f"Failed to queue email task: {str(e)}"}, status=500
+            )

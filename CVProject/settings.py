@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # third-party
     "rest_framework",
+    "django_celery_results",
     # apps
     "main",
     "audit",
@@ -117,3 +118,22 @@ REQUEST_LOG_MAX_BODY_LENGTH = config(
     "REQUEST_LOG_MAX_BODY_LENGTH", cast=int, default=1000
 )
 REQUEST_LOG_SENSITIVE_FIELDS = ["password", "token", "key", "secret"]
+
+CELERY_BROKER_URL = config("CELERY_BROKER_URL", default="redis://redis:6379/0")
+CELERY_RESULT_BACKEND = config("CELERY_RESULT_BACKEND", default="django-db")
+CELERY_ACCEPT_CONTENT = config(
+    "CELERY_ACCEPT_CONTENT",
+    default="json",
+    cast=lambda v: [s.strip() for s in v.split(",")],
+)
+CELERY_TASK_SERIALIZER = config("CELERY_TASK_SERIALIZER", default="json")
+CELERY_RESULT_SERIALIZER = config("CELERY_RESULT_SERIALIZER", default="json")
+
+EMAIL_BACKEND = config(
+    "EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend"
+)
+EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
