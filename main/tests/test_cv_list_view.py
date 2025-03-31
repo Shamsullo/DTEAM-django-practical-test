@@ -3,19 +3,19 @@ from django.urls import reverse
 
 
 class CVListViewTest(TestCase):
-    fixtures = ['cv_sample_data.json']
+    fixtures = ["cv_sample_data.json"]
 
     def setUp(self):
         self.client = Client()
 
     def test_cv_list_view(self):
-        response = self.client.get(reverse('cv_list'))
+        response = self.client.get(reverse("cv_list"))
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'main/cv_list.html')
+        self.assertTemplateUsed(response, "main/cv_list.html")
 
-        self.assertTrue('cvs' in response.context)
+        self.assertTrue("cvs" in response.context)
 
-        first_cv = response.context['cvs'][0]
+        first_cv = response.context["cvs"][0]
         self.assertEqual(first_cv.first_name, "Shamsullo")
         self.assertEqual(first_cv.last_name, "Ismatov")
 

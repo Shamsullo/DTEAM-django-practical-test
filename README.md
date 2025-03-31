@@ -85,13 +85,13 @@ method as well. For it follow these steps:
 3. **Load Sample Data (Optional)**  
    To load the initial sample data into the database, run:
    ```bash
-   docker-compose exec web poetry run python manage.py loaddata cv_sample_data
+   docker-compose exec web python manage.py loaddata cv_sample_data
    ```
 
 4. **Run Tests**  
    To execute tests inside the container, use the following command:
    ```bash
-   docker-compose exec web poetry run python manage.py test
+   docker-compose exec web python manage.py test
    ```
 
 *The `docker-compose.yml` file defines the necessary services for the

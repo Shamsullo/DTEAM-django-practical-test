@@ -12,11 +12,13 @@ class RequestLog(models.Model):
         settings.AUTH_USER_MODEL,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
     )
 
     status_code = models.IntegerField(null=True)
-    response_time = models.FloatField(null=True, help_text="Response time in seconds")
+    response_time = models.FloatField(
+        null=True, help_text="Response time in seconds"
+    )
     user_agent = models.TextField(blank=True, null=True)
     referer = models.URLField(max_length=500, blank=True, null=True)
     request_body = models.TextField(blank=True, null=True)
@@ -29,12 +31,12 @@ class RequestLog(models.Model):
     encoding = models.CharField(max_length=64, blank=True, null=True)
 
     class Meta:
-        ordering = ['-timestamp']
+        ordering = ["-timestamp"]
         indexes = [
-            models.Index(fields=['-timestamp']),
-            models.Index(fields=['user']),
-            models.Index(fields=['method']),
-            models.Index(fields=['status_code']),
+            models.Index(fields=["-timestamp"]),
+            models.Index(fields=["user"]),
+            models.Index(fields=["method"]),
+            models.Index(fields=["status_code"]),
         ]
 
     def __str__(self):

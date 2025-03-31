@@ -6,8 +6,10 @@ from .cv import CV
 
 class Project(models.Model):
     """Projects worked on"""
-    cv = models.ForeignKey(CV, on_delete=models.CASCADE,
-                           related_name='projects')
+
+    cv = models.ForeignKey(
+        CV, on_delete=models.CASCADE, related_name="projects"
+    )
     title = models.CharField(max_length=200)
     description = models.TextField()
     start_date = models.DateField()
@@ -16,4 +18,3 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
-

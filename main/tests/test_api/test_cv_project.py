@@ -11,31 +11,31 @@ class ProjectAPITests(TestCase):
     def setUp(self):
         self.client = APIClient()
         self.cv = CV.objects.create(
-            first_name="John",
-            last_name="Doe",
-            bio="Test Bio"
+            first_name="John", last_name="Doe", bio="Test Bio"
         )
         self.project = Project.objects.create(
             cv=self.cv,
             title="Test Project",
             description="Test Description",
             start_date=date(2023, 1, 1),
-            url="https://example.com"
+            url="https://example.com",
         )
 
         # URLs
-        self.project_list_url = reverse('cv-projects-list',
-                                        kwargs={'cv_pk': self.cv.pk})
-        self.project_detail_url = reverse('cv-projects-detail',
-                                          kwargs={'cv_pk': self.cv.pk,
-                                                  'pk': self.project.pk})
+        self.project_list_url = reverse(
+            "cv-projects-list", kwargs={"cv_pk": self.cv.pk}
+        )
+        self.project_detail_url = reverse(
+            "cv-projects-detail",
+            kwargs={"cv_pk": self.cv.pk, "pk": self.project.pk},
+        )
 
         # Test data
         self.project_data = {
             "title": "New Project",
             "description": "New Description",
             "start_date": "2024-01-01",
-            "url": "https://newexample.com"
+            "url": "https://newexample.com",
         }
 
     def test_create_project(self):
