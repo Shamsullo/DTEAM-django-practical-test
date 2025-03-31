@@ -1,6 +1,6 @@
 # **DTEAM - Django Developer Practical Test**
 *The application is also hosted online (in a Digital Ocean droplet) and can be accessed at:  
-[[http://167.99.130.255/](http://167.99.130.255/)](http://167.172.187.12/)*
+[http://167.99.130.255/](http://167.172.187.12/)*
 
 ### **Project Setup Guide**
 
